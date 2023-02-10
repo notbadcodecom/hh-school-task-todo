@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15.1-alpine3.17
+    container_name: todo_db
+    volumes:
+      - /var/lib/postgresql/data/
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: todo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  client:
+    container_name: todo_frontend
+    image: todomvc-vanillajs
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
