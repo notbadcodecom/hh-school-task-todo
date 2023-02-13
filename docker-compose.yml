@@ -7,11 +7,28 @@ services:
       - /var/lib/postgresql/data/
     restart: always
     ports:
-      - "5432:5432"
+      - "6542:5432"
     environment:
       POSTGRES_DB: todo
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+  service:
+    container_name: todo_backend
+    image: todomvc-service
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - /app:/app
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/todo
+      - SERVER_TODOMVC_URL=http://localhost:8080
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
   client:
     container_name: todo_frontend
     image: todomvc-vanillajs
@@ -21,3 +38,5 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    depends_on:
+      - service

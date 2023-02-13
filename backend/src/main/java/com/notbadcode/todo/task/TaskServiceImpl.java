@@ -3,6 +3,7 @@ package com.notbadcode.todo.task;
 import com.notbadcode.todo.common.JsonMapper;
 import com.notbadcode.todo.task.dto.TaskDto;
 import com.notbadcode.todo.task.dto.TasksInfoDto;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -15,13 +16,16 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class TaskServiceImpl implements TaskService {
-  private final TaskRepository repository;
+
   private final Sort TASK_SORT = Sort.by("created").descending();
 
   private final JsonMapper<Task> jsonMapper;
 
+  private final TaskRepository repository;
+
   @Autowired
-  public TaskServiceImpl(TaskRepository repository, JsonMapper<Task> jsonMapper) {
+  public TaskServiceImpl(TaskRepository repository,
+                         JsonMapper<Task> jsonMapper) {
     this.repository = repository;
     this.jsonMapper = jsonMapper;
   }
@@ -30,6 +34,9 @@ public class TaskServiceImpl implements TaskService {
   @Transactional
   public TaskDto createTaskFromString(String json) {
     Task task = jsonMapper.fromJson(json, Task.class);
+    if (task.getTitle().isBlank()) {
+      throw new BadRequestException("title is required");
+    }
     repository.save(task);
     return TaskMapper.toTaskDto(task);
   }
@@ -54,9 +61,12 @@ public class TaskServiceImpl implements TaskService {
   @Transactional
   public List<TaskDto> toggleAll() {
     boolean isAllTasksCompleted = repository.existsAllByCompletedIsFalse();
-    List<Task> tasks = repository.findAll(TASK_SORT);
-    tasks.forEach(task -> task.setCompleted(isAllTasksCompleted));
-    return tasks.stream().map(TaskMapper::toTaskDto).toList();
+    return repository.findAll(TASK_SORT).stream()
+        .map(task -> {
+              task.setCompleted(isAllTasksCompleted);
+              return TaskMapper.toTaskDto(task);
+            })
+        .toList();
   }
 
   @Override
@@ -72,7 +82,7 @@ public class TaskServiceImpl implements TaskService {
   public TaskDto updateTaskFromString(String json) {
     Task newTask = jsonMapper.fromJson(json, Task.class);
     Task task = getTaskById(newTask.getId());
-    if (newTask.getTitle() != null) {
+    if (newTask.getTitle() != null && !newTask.getTitle().isBlank()) {
       task.setTitle(newTask.getTitle());
     }
     if (newTask.getCompleted() != null) {
@@ -119,4 +129,5 @@ public class TaskServiceImpl implements TaskService {
         repository.existsAllByCompletedIsTrue(),
         repository.existsTaskByCompletedIsTrue());
   }
+  
 }
