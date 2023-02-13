@@ -52,16 +52,4 @@ public class Task {
     this.completed = completed;
   }
 
-  public void setCreated(LocalDateTime created) {
-    this.created = created;
-  }
-
-  @Override
-  public String toString() {
-    return "Task{" +
-        "id=" + id +
-        ", title='" + title + '\'' +
-        ", completed=" + completed +
-        '}';
-  }
 }
