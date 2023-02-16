@@ -3,16 +3,19 @@ package com.notbadcode.todo.task;
 import java.util.Optional;
 
 public enum TaskFilter {
-  ACTIVE,
-  COMPLETED,
-  ALL;
+
+  ACTIVE(false),
+  COMPLETED(true),
+  ALL(null);
+
+  private Boolean completed;
+
+  TaskFilter(Boolean completed) {
+    this.completed = completed;
+  }
 
   public Optional<Boolean> getCompletedOptional() {
-    return switch (this) {
-      case ACTIVE -> Optional.of(false);
-      case COMPLETED -> Optional.of(true);
-      default -> Optional.empty();
-    };
+    return Optional.ofNullable(completed);
   }
 
 }
