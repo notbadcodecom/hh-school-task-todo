@@ -1,9 +1,7 @@
 package com.notbadcode.todo.task;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.notbadcode.todo.common.JsonMapper;
+import com.notbadcode.todo.task.dto.CreateTaskDto;
 import com.notbadcode.todo.task.dto.TaskDto;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class TaskServiceImplUnitTest {
+class TaskServiceUnitTest {
 
   @Mock
   private TaskRepository repository;
@@ -29,8 +27,7 @@ class TaskServiceImplUnitTest {
 
   @BeforeEach
   void setUp() {
-    JsonMapper<Task> jsonMapper = new JsonMapper<>(new ObjectMapper());
-    service = new TaskServiceImpl(repository, jsonMapper);
+    service = new TaskService(repository);
   }
 
   @Test
@@ -39,36 +36,17 @@ class TaskServiceImplUnitTest {
     // Arrange
     Mockito.when(repository.save(any()))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    String testText = "test text";
-    String taskJson = "{\"title\": \"" + testText + "\"}";
+    CreateTaskDto taskDto = new CreateTaskDto("test text");
 
     //Act
-    TaskDto task = service.createTaskFromString(taskJson);
+    TaskDto createdTask = service.createTask(taskDto);
 
     // Asserts
-    assertThat(task)
+    assertThat(createdTask)
         .isNotNull()
         .hasFieldOrProperty("id")
-        .hasFieldOrPropertyWithValue("title", testText)
+        .hasFieldOrPropertyWithValue("title", taskDto.title())
         .hasFieldOrProperty("completed");
-  }
-
-  @Test
-  @DisplayName("Создание задачи с ошибкой (без заголовка)")
-  void createTaskWithoutTitle_thenThrowException() {
-    // Arrange
-    String taskJson = "{\"title\": \"   \"}";
-    String exceptionMessage = "title is required";
-
-    //Act
-    BadRequestException exception = assertThrows(
-        BadRequestException.class,
-        () -> service.createTaskFromString(taskJson),
-        exceptionMessage
-    );
-
-    // Asserts
-    assertThat(exception).hasMessage(exceptionMessage);
   }
 
   @Test

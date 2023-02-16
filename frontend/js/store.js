@@ -17,7 +17,7 @@ export const TodoStore = class extends EventTarget {
 
 		// GETTER methods
 		this.get = (id) => this.getRequest(this.baseUrl + "/" + id, null);
-		this.getTasksInfo = (filter) => this.getRequest(this.baseUrl + "/info", filter);
+		this.getTasksInfo = () => this.getRequest(this.baseUrl + "/info", null);
 		this.all = (filter) => this.getRequest(this.baseUrl, filter);
 	}
 
@@ -58,7 +58,7 @@ export const TodoStore = class extends EventTarget {
 	getRequest = (stringUrl, query) => {
 		let url = new URL(stringUrl);
 		if (query) {
-			url.searchParams.set("filter", query);
+			url.searchParams.set("filter", query.toUpperCase());
 		}
 		this.xhr.open("GET", url, false);
 		this.xhr.setRequestHeader('Content-Type', 'application/json');

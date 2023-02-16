@@ -15,7 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
   boolean existsAllByCompletedIsFalse();
 
-  boolean existsAllByCompletedIsTrue();
+  boolean existsTaskByCompletedIsFalse();
 
   boolean existsTaskByCompletedIsTrue();
 

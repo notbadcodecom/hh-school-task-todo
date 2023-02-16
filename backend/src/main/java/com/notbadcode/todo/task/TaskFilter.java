@@ -1,18 +1,18 @@
 package com.notbadcode.todo.task;
 
-import jakarta.ws.rs.BadRequestException;
+import java.util.Optional;
 
 public enum TaskFilter {
   ACTIVE,
   COMPLETED,
   ALL;
 
-  public static TaskFilter fromString(String filter) {
-    for (TaskFilter taskFilter : TaskFilter.values()) {
-      if (taskFilter.name().equalsIgnoreCase(filter)) {
-        return taskFilter;
-      }
-    }
-    throw new BadRequestException("available filters: active, completed, all");
+  public Optional<Boolean> getCompletedOptional() {
+    return switch (this) {
+      case ACTIVE -> Optional.of(false);
+      case COMPLETED -> Optional.of(true);
+      default -> Optional.empty();
+    };
   }
+
 }

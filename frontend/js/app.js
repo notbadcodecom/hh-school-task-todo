@@ -114,15 +114,20 @@ const App = {
 		return li;
 	},
 	render() {
-		const count = Todos.getTasksInfo()["count"];
-		let info = Todos.getTasksInfo(App.filter);
+		const tasksInfo = Todos.getTasksInfo();
 		App.$.setActiveFilter(App.filter);
 		App.$.list.replaceChildren(...Todos.all(App.filter).map((todo) => App.createTodoItem(todo)));
-		App.$.showMain(count);
-		App.$.showFooter(count);
-		App.$.showClear(info["has_completed"]);
-		App.$.toggleAll.checked = info["is_all_completed"];
-		App.$.displayCount(Todos.getTasksInfo(App.filter)["count"]);
+		App.$.showMain(tasksInfo["count_all"]);
+		App.$.showFooter(tasksInfo["count_all"]);
+		App.$.showClear(tasksInfo["has_completed"]);
+		App.$.toggleAll.checked = tasksInfo["has_active"];
+		if (App.filter === "active") {
+			App.$.displayCount(tasksInfo["count_active"]);
+		} else if (App.filter === "completed") {
+			App.$.displayCount(tasksInfo["count_completed"]);
+		} else {
+			App.$.displayCount(tasksInfo["count_all"]);
+		}
 	},
 };
 

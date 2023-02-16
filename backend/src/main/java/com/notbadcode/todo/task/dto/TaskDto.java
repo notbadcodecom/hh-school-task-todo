@@ -1,29 +1,9 @@
 package com.notbadcode.todo.task.dto;
 
-public class TaskDto {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-  private final Long id;
-
-  private final String title;
-
-  private final boolean completed;
-
-  public TaskDto(Long id, String title, boolean completed) {
-    this.id = id;
-    this.title = title;
-    this.completed = completed;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public Boolean getCompleted() {
-    return completed;
-  }
-
+public record TaskDto(@NotNull(message = "id is required") Long id,
+                      @NotBlank(message = "title is required") String title,
+                      Boolean completed) {
 }
