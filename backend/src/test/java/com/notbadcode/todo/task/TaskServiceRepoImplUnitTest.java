@@ -18,16 +18,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class TaskServiceUnitTest {
+class TaskServiceRepoImplUnitTest {
 
   @Mock
   private TaskRepository repository;
 
-  private TaskService service;
+  private TaskServiceRepoImpl service;
 
   @BeforeEach
   void setUp() {
-    service = new TaskService(repository);
+    service = new TaskServiceRepoImpl(repository);
   }
 
   @Test
